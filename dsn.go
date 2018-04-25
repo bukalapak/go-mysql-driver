@@ -564,6 +564,14 @@ func parseDSNParams(cfg *Config, params string) (err error) {
 			if err != nil {
 				return
 			}
+
+		// Max Retry
+		case "maxRetry":
+			cfg.MaxRetry, err = strconv.Atoi(value)
+			if err != nil {
+				return
+			}
+
 		default:
 			// lazy init
 			if cfg.Params == nil {
