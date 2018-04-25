@@ -210,6 +210,16 @@ func (cfg *Config) FormatDSN() string {
 		}
 	}
 
+	if cfg.MaxRetry > 0 {
+		if hasParam {
+			buf.WriteString("&maxRetry=")
+		} else {
+			hasParam = true
+			buf.WriteString("?maxRetry=")
+		}
+		buf.WriteString(strconv.Itoa(cfg.MaxRetry))
+	}
+
 	if cfg.Loc != time.UTC && cfg.Loc != nil {
 		if hasParam {
 			buf.WriteString("&loc=")
