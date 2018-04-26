@@ -150,7 +150,7 @@ func (mc *mysqlConn) writePacketOriginal(data []byte) error {
 // Write packet buffer 'data'
 func (mc *mysqlConn) writePacket(data []byte) error {
 	var err error
-	for i := 0; i < mc.cfg.MaxRetry; i++ {
+	for i := 0; i <= mc.cfg.MaxRetry; i++ {
 		sleep := mc.cfg.Backoff.NextInterval(i)
 		time.Sleep(sleep)
 
