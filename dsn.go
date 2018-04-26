@@ -112,8 +112,14 @@ func (cfg *Config) normalize() error {
 		}
 	}
 
+	// Set circuit breaker timeout
+	timeout := int(cfg.Timeout / time.Millisecond)
+	if timeout <= 0 {
+		timeout = 3000
+	}
+
 	hystrix.ConfigureCommand(cfg.Addr, hystrix.CommandConfig{
-		Timeout:                3000,
+		Timeout:                timeout,
 		ErrorPercentThreshold:  10,
 		RequestVolumeThreshold: 1000,
 		SleepWindow:            3000,
