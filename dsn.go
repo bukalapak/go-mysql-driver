@@ -73,8 +73,7 @@ func NewConfig() *Config {
 	}
 }
 
-// Intervaler returns intervaler for backoff purpose.
-func (cfg *Config) Intervaler() intervaler {
+func (cfg *Config) intervaler() intervaler {
 	if cfg.backoff == nil {
 		cfg.backoff = newExponentialBackoff()
 	}
