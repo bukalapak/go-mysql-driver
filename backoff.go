@@ -39,8 +39,8 @@ type constantBackoff struct {
 
 // newConstantBackoff creates an instance of constantBackoff with default values.
 // See Constants for the default values.
-func newConstantBackoff() *constantBackoff {
-	return &constantBackoff{
+func newConstantBackoff() constantBackoff {
+	return constantBackoff{
 		backoffInterval: defaultBackoffInterval,
 		jitterInterval:  defaultJitterInterval,
 		maxInterval:     defaultMaxInterval,
@@ -48,7 +48,7 @@ func newConstantBackoff() *constantBackoff {
 }
 
 // NextInterval returns next interval for backoff.
-func (c *constantBackoff) NextInterval(order int) time.Duration {
+func (c constantBackoff) NextInterval(order int) time.Duration {
 	if order <= 0 {
 		return 0 * time.Millisecond
 	}
@@ -74,8 +74,8 @@ type exponentialBackoff struct {
 
 // newExponentialBackoff creates an instance of exponentialBackoff with default values.
 // See Constants for the default values.
-func newExponentialBackoff() *exponentialBackoff {
-	return &exponentialBackoff{
+func newExponentialBackoff() exponentialBackoff {
+	return exponentialBackoff{
 		backoffInterval: defaultBackoffInterval,
 		jitterInterval:  defaultJitterInterval,
 		maxInterval:     defaultMaxInterval,
@@ -84,7 +84,7 @@ func newExponentialBackoff() *exponentialBackoff {
 }
 
 // NextInterval returns the next order-th interval for backoff.
-func (e *exponentialBackoff) NextInterval(order int) time.Duration {
+func (e exponentialBackoff) NextInterval(order int) time.Duration {
 	if order <= 0 {
 		return 0 * time.Millisecond
 	}
@@ -103,11 +103,11 @@ type noBackoff struct {
 }
 
 // newNoBackoff creates an instance of noBackoff
-func newNoBackoff() *noBackoff {
-	return &noBackoff{}
+func newNoBackoff() noBackoff {
+	return noBackoff{}
 }
 
 // NextInterval returns the next order-th interval for backoff.
-func (n *noBackoff) NextInterval(_ int) time.Duration {
+func (n noBackoff) NextInterval(_ int) time.Duration {
 	return 0
 }
