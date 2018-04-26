@@ -233,6 +233,16 @@ func (cfg *Config) FormatDSN() string {
 		}
 	}
 
+	if cfg.ConnectionName != "" {
+		if hasParam {
+			buf.WriteString("&connectionName=")
+		} else {
+			hasParam = true
+			buf.WriteString("?connectionName=")
+		}
+		buf.WriteString(cfg.ConnectionName)
+	}
+
 	if cfg.MaxRetry > 0 {
 		if hasParam {
 			buf.WriteString("&maxRetry=")
