@@ -18,6 +18,8 @@ import (
 	"io"
 	"math"
 	"time"
+
+	"github.com/afex/hystrix-go/hystrix"
 )
 
 // Packets documentation:
@@ -147,8 +149,7 @@ func (mc *mysqlConn) writePacketOriginal(data []byte) error {
 	}
 }
 
-// Write packet buffer 'data'
-func (mc *mysqlConn) writePacket(data []byte) error {
+func (mc *mysqlConn) writePacketUsingRetry(data []byte) error {
 	var err error
 	for i := 0; i <= mc.cfg.MaxRetry; i++ {
 		sleep := mc.cfg.Intervaler.NextInterval(i)
@@ -160,6 +161,32 @@ func (mc *mysqlConn) writePacket(data []byte) error {
 		break
 	}
 	return err
+}
+
+func (mc *mysqlConn) writePacketUsingCB(data []byte) error {
+	var err error
+	for i := 0; i <= mc.cfg.MaxRetry; i++ {
+		sleep := mc.cfg.Intervaler.NextInterval(i)
+		time.Sleep(sleep)
+
+		err = hystrix.Do(mc.cfg.Addr, func() error {
+			return mc.writePacketOriginal(data)
+		}, nil)
+
+		if err != nil {
+			continue
+		}
+		break
+	}
+	return err
+}
+
+// Write packet buffer 'data'
+func (mc *mysqlConn) writePacket(data []byte) error {
+	if mc.cfg.EnableCircuitBreaker {
+		return mc.writePacketUsingCB(data)
+	}
+	return mc.writePacketUsingRetry(data)
 }
 
 /******************************************************************************

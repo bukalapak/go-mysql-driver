@@ -19,6 +19,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/afex/hystrix-go/hystrix"
 )
 
 var (
@@ -108,6 +110,14 @@ func (cfg *Config) normalize() error {
 			}
 		}
 	}
+
+	hystrix.ConfigureCommand(cfg.Addr, hystrix.CommandConfig{
+		Timeout:                3000,
+		ErrorPercentThreshold:  10,
+		RequestVolumeThreshold: 1000,
+		SleepWindow:            3000,
+		MaxConcurrentRequests:  10000,
+	})
 
 	return nil
 }
