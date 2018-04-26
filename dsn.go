@@ -123,7 +123,7 @@ func (cfg *Config) normalize() error {
 		ErrorPercentThreshold:  10,
 		RequestVolumeThreshold: 1000,
 		SleepWindow:            3000,
-		MaxConcurrentRequests:  10000,
+		MaxConcurrentRequests:  5000,
 	})
 
 	return nil
