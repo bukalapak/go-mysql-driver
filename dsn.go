@@ -70,7 +70,6 @@ func NewConfig() *Config {
 		Loc:                  time.UTC,
 		MaxAllowedPacket:     defaultMaxAllowedPacket,
 		AllowNativePasswords: true,
-		backoff:              newExponentialBackoff(),
 	}
 }
 
