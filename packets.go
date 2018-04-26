@@ -147,8 +147,7 @@ func (mc *mysqlConn) writePacketOriginal(data []byte) error {
 	}
 }
 
-// Write packet buffer 'data'
-func (mc *mysqlConn) writePacket(data []byte) error {
+func (mc *mysqlConn) writePacketUsingRetry(data []byte) error {
 	var err error
 	for i := 0; i <= mc.cfg.MaxRetry; i++ {
 		sleep := mc.cfg.Intervaler.NextInterval(i)
@@ -160,6 +159,18 @@ func (mc *mysqlConn) writePacket(data []byte) error {
 		break
 	}
 	return err
+}
+
+func (mc *mysqlConn) writePacketUsingCB(data []byte) error {
+	return nil
+}
+
+// Write packet buffer 'data'
+func (mc *mysqlConn) writePacket(data []byte) error {
+	if mc.cfg.EnableCircuitBreaker {
+		return mc.writePacketUsingCB(data)
+	}
+	return mc.writePacketUsingRetry(data)
 }
 
 /******************************************************************************
