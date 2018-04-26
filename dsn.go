@@ -64,6 +64,7 @@ type Config struct {
 	MaxRetry             int        // Max number of retry
 	Intervaler           intervaler // Backoff strategy to be used
 	EnableCircuitBreaker bool       // Enable circuit breaker strategy
+	ConnectionName       string     // Connection's name to identify specific connection
 }
 
 // NewConfig creates a new Config and sets default values.
@@ -230,6 +231,16 @@ func (cfg *Config) FormatDSN() string {
 			hasParam = true
 			buf.WriteString("?enableCircuitBreaker=true")
 		}
+	}
+
+	if cfg.ConnectionName != "" {
+		if hasParam {
+			buf.WriteString("&connectionName=")
+		} else {
+			hasParam = true
+			buf.WriteString("?connectionName=")
+		}
+		buf.WriteString(cfg.ConnectionName)
 	}
 
 	if cfg.MaxRetry > 0 {
@@ -611,6 +622,11 @@ func parseDSNParams(cfg *Config, params string) (err error) {
 			if !isBool {
 				return errors.New("invalid bool value: " + value)
 			}
+
+		// Connection name
+		case "connectionName":
+			cfg.ConnectionName = value
+			return nil
 
 		default:
 			// lazy init
