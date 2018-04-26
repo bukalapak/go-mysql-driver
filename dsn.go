@@ -623,6 +623,11 @@ func parseDSNParams(cfg *Config, params string) (err error) {
 				return errors.New("invalid bool value: " + value)
 			}
 
+		// Connection name
+		case "connectionName":
+			cfg.ConnectionName = value
+			return nil
+
 		default:
 			// lazy init
 			if cfg.Params == nil {
