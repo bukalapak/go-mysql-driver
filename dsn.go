@@ -59,8 +59,8 @@ type Config struct {
 	RejectReadOnly          bool // Reject read-only connections
 
 	// Additional Usage
-	MaxRetry int        // Max number of retry
-	backoff  intervaler // backoff strategy to be used
+	MaxRetry   int        // Max number of retry
+	Intervaler intervaler // backoff strategy to be used
 }
 
 // NewConfig creates a new Config and sets default values.
@@ -70,14 +70,8 @@ func NewConfig() *Config {
 		Loc:                  time.UTC,
 		MaxAllowedPacket:     defaultMaxAllowedPacket,
 		AllowNativePasswords: true,
+		Intervaler:           newExponentialBackoff(),
 	}
-}
-
-func (cfg *Config) intervaler() intervaler {
-	if cfg.backoff == nil {
-		cfg.backoff = newExponentialBackoff()
-	}
-	return cfg.backoff
 }
 
 func (cfg *Config) normalize() error {
