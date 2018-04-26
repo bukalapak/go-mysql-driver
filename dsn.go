@@ -64,6 +64,7 @@ type Config struct {
 	MaxRetry             int        // Max number of retry
 	Intervaler           intervaler // Backoff strategy to be used
 	EnableCircuitBreaker bool       // Enable circuit breaker strategy
+	ConnectionName       string     // Connection's name to identify specific connection
 }
 
 // NewConfig creates a new Config and sets default values.
