@@ -59,8 +59,9 @@ type Config struct {
 	RejectReadOnly          bool // Reject read-only connections
 
 	// Additional Usage
-	MaxRetry   int        // Max number of retry
-	Intervaler intervaler // backoff strategy to be used
+	MaxRetry             int        // Max number of retry
+	Intervaler           intervaler // Backoff strategy to be used
+	EnableCircuitBreaker bool       // Enable circuit breaker strategy
 }
 
 // NewConfig creates a new Config and sets default values.
@@ -209,6 +210,15 @@ func (cfg *Config) FormatDSN() string {
 		} else {
 			hasParam = true
 			buf.WriteString("?interpolateParams=true")
+		}
+	}
+
+	if cfg.EnableCircuitBreaker {
+		if hasParam {
+			buf.WriteString("&enableCircuitBreaker=true")
+		} else {
+			hasParam = true
+			buf.WriteString("?enableCircuitBreaker=true")
 		}
 	}
 
@@ -582,6 +592,14 @@ func parseDSNParams(cfg *Config, params string) (err error) {
 			cfg.MaxRetry, err = strconv.Atoi(value)
 			if err != nil {
 				return
+			}
+
+		// Circuit Breaker
+		case "enableCircuitBreaker":
+			var isBool bool
+			cfg.EnableCircuitBreaker, isBool = readBool(value)
+			if !isBool {
+				return errors.New("invalid bool value: " + value)
 			}
 
 		default:
