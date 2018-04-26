@@ -27,7 +27,7 @@ const (
 	defaultMaxInterval = 3 * time.Second
 )
 
-// constantBackoff implements Backoff using constant interval.
+// constantBackoff implements intervaler using constant interval.
 type constantBackoff struct {
 	// backoffInterval defines how long the next backoff will be compared to the previous one.
 	backoffInterval time.Duration
@@ -60,7 +60,7 @@ func (c constantBackoff) NextInterval(order int) time.Duration {
 	return time.Duration(backoffInterval + float64(jitterInterval))
 }
 
-// exponentialBackoff implements Backoff using exponential interval.
+// exponentialBackoff implements intervaler using exponential interval.
 type exponentialBackoff struct {
 	// backoffInterval defines how long the next backoff will be compared to the previous one.
 	backoffInterval time.Duration
@@ -98,7 +98,7 @@ func (e exponentialBackoff) NextInterval(order int) time.Duration {
 	return time.Duration(backoffInterval + float64(jitterInterval))
 }
 
-// noBackoff implements backoff without any interval.
+// noBackoff implements intervaler without any interval.
 type noBackoff struct {
 }
 
