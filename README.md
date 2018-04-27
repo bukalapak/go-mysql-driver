@@ -341,6 +341,17 @@ Default:        0
 Maximum number a request should be retried when an error happens. It is the implementation of retry-strategy.
 
 
+##### `enableCircuitBreaker`
+
+```
+Type:           bool
+Valid Values:   true, false
+Default:        false
+```
+
+`enableCircuitBreaker=true` enables circuit breaker. Any success or failure will be recorded. When the error percentage threshold is reached, the circuit will be in open state. At that moment, any request will be ignored so if something happens with the database, the client will not fail. It is hopefully be able to increase system resiliency. The error percentage threshold is 10% with volume threshold about 1.000 requests. Circuit breaker also has timeout. Its timeout is the same dial timeout and uses 3s as timeout if not configured.
+
+
 ##### System Variables
 
 Any other parameters are interpreted as system variables:
