@@ -352,6 +352,15 @@ Default:        false
 `enableCircuitBreaker=true` enables circuit breaker. Any success or failure will be recorded. When the error percentage threshold is reached, the circuit will be in open state. At that moment, any request will be ignored so if something happens with the database, the client will not fail. It is hopefully be able to increase system resiliency. The error percentage threshold is 10% with volume threshold about 1.000 requests. Circuit breaker also has timeout. Its timeout is the same dial timeout and uses 3s as timeout if not configured.
 
 
+##### `connectionName`
+
+```
+Type:           string
+Valid Values:   <escaped name>
+```
+
+`connectionName` is used to identify connection. Developers are strongly recommended to specify their connection. It will be very useful to identify connection metric.
+
 ##### System Variables
 
 Any other parameters are interpreted as system variables:
