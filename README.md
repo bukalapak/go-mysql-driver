@@ -331,6 +331,36 @@ Default:        0
 I/O write timeout. The value must be a decimal number with a unit suffix (*"ms"*, *"s"*, *"m"*, *"h"*), such as *"30s"*, *"0.5m"* or *"1m30s"*.
 
 
+##### `maxRetry`
+
+```
+Type:           int
+Default:        0
+```
+
+Maximum number a request should be retried when an error happens. It is the implementation of retry-strategy.
+
+
+##### `enableCircuitBreaker`
+
+```
+Type:           bool
+Valid Values:   true, false
+Default:        false
+```
+
+`enableCircuitBreaker=true` enables circuit breaker. Any success or failure will be recorded. When the error percentage threshold is reached, the circuit will be in open state. At that moment, any request will be ignored so if something happens with the database, the client will not fail. It is hopefully be able to increase system resiliency. The error percentage threshold is 10% with volume threshold about 1.000 requests. Circuit breaker also has timeout. Its timeout is the same dial timeout and uses 3s as timeout if not configured.
+
+
+##### `connectionName`
+
+```
+Type:           string
+Valid Values:   <escaped name>
+```
+
+`connectionName` is used to identify connection. Developers are strongly recommended to specify their connection. It will be very useful to identify connection metric.
+
 ##### System Variables
 
 Any other parameters are interpreted as system variables:
@@ -364,6 +394,10 @@ user:password@tcp(localhost:5555)/dbname?tls=skip-verify&autocommit=true
 
 ```
 user:password@tcp(localhost:5555)/dbname?maxRetry=3
+```
+
+```
+user:password@tcp(localhost:5555)/dbname?maxRetry=3&connectionName=espeon&enableCircuitBreaker=true
 ```
 
 Treat warnings as errors by setting the system variable [`sql_mode`](https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html):
@@ -405,6 +439,18 @@ No Database preselected:
 ```
 user:password@/
 ```
+
+
+#### Recommended DSN Parameters
+
+There are many parameters that can be used in DSN. From all of them, for resiliency purpose, we recommend to specify the following parameters:
+
+- `timeout=<your-timeout>`
+- `enableCircuitBreaker=true`
+- `connectionName=<your-connection-name>`
+- `maxRetry=<your-max-retry>`
+
+Developers are strongly recommended to enable circuit breaker and set max retry value, though, `maxRetry=0` should be enough.
 
 
 ### Connection pool and timeouts
