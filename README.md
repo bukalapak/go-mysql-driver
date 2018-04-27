@@ -450,6 +450,8 @@ There are many parameters that can be used in DSN. From all of them, for resilie
 - `connectionName=<your-connection-name>`
 - `maxRetry=<your-max-retry>`
 
+Developers are strongly recommended to enable circuit breaker and set max retry value, though, `maxRetry=0` should be enough.
+
 
 ### Connection pool and timeouts
 The connection pool is managed by Go's database/sql package. For details on how to configure the size of the pool and how long connections stay in the pool see `*DB.SetMaxOpenConns`, `*DB.SetMaxIdleConns`, and `*DB.SetConnMaxLifetime` in the [database/sql documentation](https://golang.org/pkg/database/sql/). The read, write, and dial timeouts for each individual connection are configured with the DSN parameters [`readTimeout`](#readtimeout), [`writeTimeout`](#writetimeout), and [`timeout`](#timeout), respectively.
