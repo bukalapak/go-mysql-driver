@@ -48,6 +48,9 @@ var testDSNs = []struct {
 	"user:password@tcp(localhost:5555)/dbname?connectionName=dummy-name",
 	&Config{User: "user", Passwd: "password", Net: "tcp", Addr: "localhost:5555", DBName: "dbname", Collation: "utf8_general_ci", Loc: time.UTC, MaxAllowedPacket: defaultMaxAllowedPacket, AllowNativePasswords: true, ConnectionName: "dummy-name", Intervaler: newExponentialBackoff()},
 }, {
+	"user:password@tcp(localhost:5555)/dbname?connectionName=dummy-name&enableCircuitBreaker=true",
+	&Config{User: "user", Passwd: "password", Net: "tcp", Addr: "localhost:5555", DBName: "dbname", Collation: "utf8_general_ci", Loc: time.UTC, MaxAllowedPacket: defaultMaxAllowedPacket, AllowNativePasswords: true, ConnectionName: "dummy-name", EnableCircuitBreaker: true, Intervaler: newExponentialBackoff()},
+}, {
 	"user:password@tcp(localhost:5555)/dbname?charset=utf8mb4,utf8&tls=skip-verify",
 	&Config{User: "user", Passwd: "password", Net: "tcp", Addr: "localhost:5555", DBName: "dbname", Params: map[string]string{"charset": "utf8mb4,utf8"}, Collation: "utf8_general_ci", Loc: time.UTC, MaxAllowedPacket: defaultMaxAllowedPacket, AllowNativePasswords: true, TLSConfig: "skip-verify", Intervaler: newExponentialBackoff()},
 }, {
