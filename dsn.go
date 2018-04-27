@@ -246,7 +246,7 @@ func (cfg *Config) FormatDSN() string {
 			hasParam = true
 			buf.WriteString("?connectionName=")
 		}
-		buf.WriteString(cfg.ConnectionName)
+		buf.WriteString(url.QueryEscape(cfg.ConnectionName))
 	}
 
 	if cfg.MaxRetry > 0 {
@@ -631,8 +631,9 @@ func parseDSNParams(cfg *Config, params string) (err error) {
 
 		// Connection name
 		case "connectionName":
-			cfg.ConnectionName = value
-			return nil
+			if cfg.ConnectionName, err = url.QueryUnescape(value); err != nil {
+				return
+			}
 
 		default:
 			// lazy init
