@@ -441,6 +441,16 @@ user:password@/
 ```
 
 
+#### Recommended DSN Parameters
+
+There are many parameters that can be used in DSN. From all of them, for resiliency purpose, we recommend to specify the following parameters:
+
+- `timeout=<your-timeout>`
+- `enableCircuitBreaker=true`
+- `connectionName=<your-connection-name>`
+- `maxRetry=<your-max-retry>`
+
+
 ### Connection pool and timeouts
 The connection pool is managed by Go's database/sql package. For details on how to configure the size of the pool and how long connections stay in the pool see `*DB.SetMaxOpenConns`, `*DB.SetMaxIdleConns`, and `*DB.SetConnMaxLifetime` in the [database/sql documentation](https://golang.org/pkg/database/sql/). The read, write, and dial timeouts for each individual connection are configured with the DSN parameters [`readTimeout`](#readtimeout), [`writeTimeout`](#writetimeout), and [`timeout`](#timeout), respectively.
 
