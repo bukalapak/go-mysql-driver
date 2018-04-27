@@ -331,6 +331,16 @@ Default:        0
 I/O write timeout. The value must be a decimal number with a unit suffix (*"ms"*, *"s"*, *"m"*, *"h"*), such as *"30s"*, *"0.5m"* or *"1m30s"*.
 
 
+##### `maxRetry`
+
+```
+Type:           int
+Default:        0
+```
+
+Maximum number a request should be retried when an error happens. It is the implementation of retry-strategy.
+
+
 ##### System Variables
 
 Any other parameters are interpreted as system variables:
