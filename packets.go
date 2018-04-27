@@ -169,14 +169,15 @@ func (mc *mysqlConn) writePacketUsingCB(data []byte) error {
 		sleep := mc.cfg.Intervaler.NextInterval(i)
 		time.Sleep(sleep)
 
-		cb, _, _ := hystrix.GetCircuit(mc.cfg.Addr)
+		conn := mc.cfg.ConnectionName + "-" + mc.cfg.Addr
+		cb, _, _ := hystrix.GetCircuit(conn)
 		if cb.IsOpen() {
-			counter.WithLabelValues("mysql-driver-"+mc.cfg.Addr, "open").Inc()
+			counter.WithLabelValues("mysql-driver-"+conn, "open").Inc()
 		} else {
-			counter.WithLabelValues("mysql-driver-"+mc.cfg.Addr, "close").Inc()
+			counter.WithLabelValues("mysql-driver-"+conn, "close").Inc()
 		}
 
-		err = hystrix.Do(mc.cfg.Addr, func() error {
+		err = hystrix.Do(conn, func() error {
 			return mc.writePacketOriginal(data)
 		}, nil)
 
