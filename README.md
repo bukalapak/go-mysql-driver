@@ -396,6 +396,10 @@ user:password@tcp(localhost:5555)/dbname?tls=skip-verify&autocommit=true
 user:password@tcp(localhost:5555)/dbname?maxRetry=3
 ```
 
+```
+user:password@tcp(localhost:5555)/dbname?maxRetry=3&connectionName=espeon&enableCircuitBreaker=true
+```
+
 Treat warnings as errors by setting the system variable [`sql_mode`](https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html):
 ```
 user:password@/dbname?sql_mode=TRADITIONAL
