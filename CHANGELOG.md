@@ -1,3 +1,13 @@
+## Version 1.4 (2018-04-30)
+
+New Features:
+
+  - Enable retry strategy (#1 and #2)
+  - Enable circuit breaker strategy (#3, #4, #7, and #9)
+  - Export circuit breaker metric (#5)
+  - Connection can have a name (#6 and #8)
+
+
 ## Version 1.3 (2016-12-01)
 
 Changes:
