@@ -15,6 +15,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	opentracing "github.com/opentracing/opentracing-go"
 )
 
 // a copy of context.Context for Go 1.7 and earlier
@@ -46,8 +48,9 @@ type mysqlConn struct {
 	watcher  chan<- mysqlContext
 	closech  chan struct{}
 	finished chan<- struct{}
-	canceled atomicError // set non-nil if conn is canceled
-	closed   atomicBool  // set when conn is closed, before closech is closed
+	canceled atomicError      // set non-nil if conn is canceled
+	closed   atomicBool       // set when conn is closed, before closech is closed
+	span     opentracing.Span // add span for tracer
 }
 
 // Handles parameters set in DSN after the connection is established
