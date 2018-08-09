@@ -19,6 +19,8 @@ import (
 	"math"
 	"time"
 
+	"github.com/opentracing/opentracing-go"
+
 	"github.com/afex/hystrix-go/hystrix"
 )
 
@@ -164,9 +166,11 @@ func (mc *mysqlConn) writePacketUsingRetry(data []byte) error {
 }
 
 func (mc *mysqlConn) tracePacket(command []byte, err error) {
-	span := mc.span
-	if span == nil {
-		return
+	var span opentracing.Span
+	if mc.span == nil {
+		span = opentracing.StartSpan("mysql_tracing")
+	} else {
+		span = mc.span
 	}
 	defer span.Finish()
 
