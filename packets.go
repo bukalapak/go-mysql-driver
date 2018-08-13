@@ -19,6 +19,8 @@ import (
 	"math"
 	"time"
 
+	"github.com/opentracing/opentracing-go"
+
 	"github.com/afex/hystrix-go/hystrix"
 )
 
@@ -163,6 +165,29 @@ func (mc *mysqlConn) writePacketUsingRetry(data []byte) error {
 	return err
 }
 
+func (mc *mysqlConn) tracePacket(command []byte, err error) {
+	var span opentracing.Span
+	if mc.span == nil {
+		span = opentracing.StartSpan("mysql_tracing")
+	} else {
+		span = mc.span
+	}
+	defer span.Finish()
+
+	start := time.Now()
+	span = span.SetTag("db.type", "mysql")
+	span = span.SetTag("db.query", string(command))
+	span = span.SetTag("span.kind", "client")
+	if err != nil {
+		span.LogEvent("error")
+		span.LogKV(
+			"event", "error",
+			"message", err.Error(),
+			"latency", time.Since(start).Seconds(),
+		)
+	}
+}
+
 func (mc *mysqlConn) writePacketUsingCB(data []byte) error {
 	var err error
 	for i := 0; i <= mc.cfg.MaxRetry; i++ {
@@ -190,11 +215,15 @@ func (mc *mysqlConn) writePacketUsingCB(data []byte) error {
 }
 
 // Write packet buffer 'data'
-func (mc *mysqlConn) writePacket(data []byte) error {
+func (mc *mysqlConn) writePacket(data []byte) (err error) {
 	if mc.cfg.EnableCircuitBreaker {
-		return mc.writePacketUsingCB(data)
+		err = mc.writePacketUsingCB(data)
+	} else {
+		err = mc.writePacketUsingRetry(data)
 	}
-	return mc.writePacketUsingRetry(data)
+
+	mc.tracePacket(data, err)
+	return
 }
 
 /******************************************************************************

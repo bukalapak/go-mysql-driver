@@ -14,6 +14,8 @@ import (
 	"context"
 	"database/sql"
 	"database/sql/driver"
+
+	opentracing "github.com/opentracing/opentracing-go"
 )
 
 // Ping implements driver.Pinger interface
@@ -28,6 +30,7 @@ func (mc *mysqlConn) Ping(ctx context.Context) error {
 	}
 	defer mc.finish()
 
+	mc.registerSpanContext(ctx)
 	if err := mc.writeCommandPacket(comPing); err != nil {
 		return err
 	}
@@ -44,6 +47,7 @@ func (mc *mysqlConn) BeginTx(ctx context.Context, opts driver.TxOptions) (driver
 		return nil, err
 	}
 	defer mc.finish()
+	mc.registerSpanContext(ctx)
 
 	if sql.IsolationLevel(opts.Isolation) != sql.LevelDefault {
 		level, err := mapIsolationLevel(opts.Isolation)
@@ -65,6 +69,7 @@ func (mc *mysqlConn) QueryContext(ctx context.Context, query string, args []driv
 		return nil, err
 	}
 
+	mc.registerSpanContext(ctx)
 	if err := mc.watchCancel(ctx); err != nil {
 		return nil, err
 	}
@@ -78,6 +83,10 @@ func (mc *mysqlConn) QueryContext(ctx context.Context, query string, args []driv
 	return rows, err
 }
 
+func (mc *mysqlConn) registerSpanContext(ctx context.Context) {
+	mc.span, _ = opentracing.StartSpanFromContext(ctx, "go_mysql_client")
+}
+
 func (mc *mysqlConn) ExecContext(ctx context.Context, query string, args []driver.NamedValue) (driver.Result, error) {
 	dargs, err := namedValueToValue(args)
 	if err != nil {
@@ -89,6 +98,7 @@ func (mc *mysqlConn) ExecContext(ctx context.Context, query string, args []drive
 	}
 	defer mc.finish()
 
+	mc.registerSpanContext(ctx)
 	return mc.Exec(query, dargs)
 }
 
@@ -97,6 +107,7 @@ func (mc *mysqlConn) PrepareContext(ctx context.Context, query string) (driver.S
 		return nil, err
 	}
 
+	mc.registerSpanContext(ctx)
 	stmt, err := mc.Prepare(query)
 	mc.finish()
 	if err != nil {
@@ -121,13 +132,14 @@ func (stmt *mysqlStmt) QueryContext(ctx context.Context, args []driver.NamedValu
 	if err := stmt.mc.watchCancel(ctx); err != nil {
 		return nil, err
 	}
-
+	stmt.mc.registerSpanContext(ctx)
 	rows, err := stmt.query(dargs)
 	if err != nil {
 		stmt.mc.finish()
 		return nil, err
 	}
 	rows.finish = stmt.mc.finish
+
 	return rows, err
 }
 
@@ -137,6 +149,7 @@ func (stmt *mysqlStmt) ExecContext(ctx context.Context, args []driver.NamedValue
 		return nil, err
 	}
 
+	stmt.mc.registerSpanContext(ctx)
 	if err := stmt.mc.watchCancel(ctx); err != nil {
 		return nil, err
 	}

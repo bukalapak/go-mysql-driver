@@ -38,6 +38,7 @@ A MySQL-Driver for Go's [database/sql](https://golang.org/pkg/database/sql/) pac
   * Secure `LOAD DATA LOCAL INFILE` support with file Whitelisting and `io.Reader` support
   * Optional `time.Time` parsing
   * Optional placeholder interpolation
+  * Support OpenTracing - go-mysql-driver will trace every database operation using OpenTracing API.
 
 ## Requirements
   * Go 1.7 or higher. We aim to support the 3 latest versions of Go.
